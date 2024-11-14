@@ -22,9 +22,16 @@ public class HomeController {
 	      
 	      String formattedDate = dateFormat.format(date);
 	      
-	      model.addAttribute("serverTime", formattedDate );
+	      model.addAttribute("serverTime", formattedDate);
 		
 		
 		return "home";
+	}
+	@RequestMapping(value="/test")
+	public String test(Model model) {
+		String test = "안녕하세요!";
+		model.addAttribute("tt", test);
+		
+		return "test";
 	}
 }
