@@ -3,11 +3,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href="./resources/css/bootstrap.min.css" rel="stylesheet">
+<link href="/BookMarket/resources/css/bootstrap.min.css" rel="stylesheet">
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
-<body>
+<body> 
 	<%@ include file="menu.jsp" %>
 	<div class="jumbotron">
 		<div class="container">

@@ -1,9 +1,13 @@
 package com.springmvc.repository;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.ui.Model;
 
 import com.springmvc.domain.Book;
 
@@ -44,9 +48,105 @@ public class BookRepositoryImpl implements BookRepository{
 	
 	@Override
 	public List<Book> getAllBookList() {
-		System.out.println("BookController 진입");
+		System.out.println("BookRepo_getAll 진입");
 		
 		return listOfBooks;
 	}
+
+	@Override
+	public List<Book> getBookListByCategory(String category) {
+		System.out.println("BookRepo_getCate 진입");
+		List<Book> booksByCategory = new ArrayList<Book>();
+		for(int i=0; i< listOfBooks.size(); i++) {
+			Book book = listOfBooks.get(i);
+			if(category.equalsIgnoreCase(book.getCategory()))
+				booksByCategory.add(book);
+		}
+		
+		return booksByCategory;
+	}
+
+	
+	
+	@Override
+	public Set<Book> getBookListByFilter(Map<String, List<String>> filter) {
+		//4. service에서 넘어온 파라미터를 여기서 처리한다.
+		System.out.println("Repo에서 파라미터 받음 : "+filter);
+		
+		//publisher와 category로 구분된 리스트를 만든다. set은 중복허용x, 
+		Set<Book> booksByPublisher = new HashSet<Book>();
+		Set<Book> booksByCategory = new HashSet<Book>();
+		
+		//Map의 모든 key를 꺼낸다.
+		Set<String> booksByFilter = filter.keySet();
+		
+		//키 중에 publisher라는 문자열을 가지고 있다면 true
+		if(booksByFilter.contains("publisher")) {
+			for(int j=0; j<filter.get("publisher").size(); j++) {
+				//publisher를 가진 value를 하나하나 꺼낸다.
+				String publisherName = filter.get("publisher").get(j);
+				for(int i=0; i<listOfBooks.size(); i++) {
+					Book book = listOfBooks.get(i);
+					//꺼낸 value와 현재 DB에 존재하는 DTO(Book) 중 get()으로 꺼낸 것과 같은 publisher라면
+					if(publisherName.equalsIgnoreCase(book.getPublisher()))
+						//publisher 리스트에 add()
+						booksByPublisher.add(book);
+				}
+			}
+		}
+		System.out.println("repo_publisher : "+booksByPublisher);
+		//키 중 category라는 문자열을 가지고 있다면 true
+		if(booksByFilter.contains("category")) {
+			for(int i=0; i<filter.get("category").size();i++) {
+				
+				String category = filter.get("category").get(i);
+				List<Book> list = getBookListByCategory(category);
+				booksByCategory.addAll(list);
+			}
+		}
+		System.out.println("repo_category : "+booksByCategory);
+		//retainAll() : 파라미터로 전달된 Collection 객체가 가진 요소와 비교하여 
+		//  			중복된 값들만 남기고 나머지는 제거. 따라서 조건에 부합하는 DTO만 넘겨 출력.
+		booksByCategory.retainAll(booksByPublisher);
+		
+		//model.addAttribute("bookList",booksByCategory);
+		//5. 요청에 응답하는 DTO를 담았다면 return (service로)
+		return booksByCategory;
+	}
+
+	@Override
+	public Book getBookById(String bookId) {
+		//3. Service에서 호출한 Repo의 메서드로 진입하여 파라미터를 가지고 어떤 DTO를 찾는지 연산
+		System.out.println("id_Repo 진입 : "+bookId);
+		
+		Book bookInfo = null;
+		for(int i=0; i<listOfBooks.size(); i++) {
+			// book을 생성하며 전체 책을 하나씩 꺼내 넣는다.
+			Book book = listOfBooks.get(i);
+			// book의 값이 null이 아니고, book의 id를 get했을 때 null이 아니고, 
+			// listOfBooks에서 get()하여 꺼낸 book의 id와 현재 함수에 들어올 때 가지고온 파라미터와 같다면 !
+			if(book != null && book.getBookId() != null &&book.getBookId().equals(bookId)) {
+				// 해당 dto가 맞으니 service로 넘겨줄 수 있게 주소를 넣는다.
+				bookInfo = book;
+				break;
+			}
+		}
+		System.out.println("id_Repo 결과 : "+bookInfo);
+		
+		// 4. dto를 찾았으니 service로 돌아간다.
+		return bookInfo;
+	}
+
+	// MODEL에 도서를 등록하기 위한 절차
+	//3. MODEL에 새로 등록할 DTO를 넘겨 등록 (현재 DB구현 X)
+	//4. 함수 종료. 호출 위치로 이동
+	@Override
+	public void setNewBook(Book book) {
+		System.out.println("setNewBook Repo IN : "+book.getBookId());
+		listOfBooks.add(book);
+	}
+	
+	
+	
 
 }
