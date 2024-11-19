@@ -1,6 +1,7 @@
 <%@ page isELIgnored="false" language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.springmvc.domain.Book" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +19,24 @@
 	
 	<div class="container">
 		<div class="row">
-			<div class="col-md-12">
+			<div class="col-md-4">
+				<%
+					Book book = (Book)request.getAttribute("book");
+					String bookImage = null;
+					System.out.println("book주소 : "+book);
+					if(book != null && book.getBookImage() != null){
+						bookImage = book.getBookImage().getOriginalFilename();
+						System.out.println("bookImage : "+bookImage);	
+					}
+				
+					if(bookImage == null){
+				%>
+					<img src="/BookMarket/resources/images/<%=book.getBookId()%>.png" style="width:100%">			
+				<%} else{%>
+					<img src="/BookMarket/resources/images/<%=bookImage %>" style="width:100%">
+				<%} %>
+			</div>
+			<div class="col-md-8">
 				<h3>${book.name}</h3>
 				<p>${book.description }</p>
 				<br>

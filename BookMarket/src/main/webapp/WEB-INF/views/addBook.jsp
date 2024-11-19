@@ -20,7 +20,7 @@
 	</div>
 	<div class="container">
 	<!-- JSP와 다른 form태그 사용법, form태그 내에서는 form:(form, input 등)으로 표현해야한다.  -->
-	<form:form modelAttribute="NewBook" class="form-horizontal">
+	<form:form modelAttribute="NewBook" class="form-horizontal" encType="multipart/form-data">
 		<fieldset>
 		<legend>${addTitle }</legend>
 			<div class="form-group row">
@@ -88,6 +88,12 @@
 					<form:radiobutton path="condition" value="New"/>New
 					<form:radiobutton path="condition" value="Old"/>Old
 					<form:radiobutton path="condition" value="E-Book"/>E-Book
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-2 control-label">도서이미지</label>
+				<div class="col-sm-7">
+					<form:input path="bookImage" type="file" class="form-control"/>
 				</div>
 			</div>
 			<div class="form-group row">

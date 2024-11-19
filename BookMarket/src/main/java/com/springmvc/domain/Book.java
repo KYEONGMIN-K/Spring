@@ -2,6 +2,8 @@ package com.springmvc.domain;
 
 import java.io.Serializable;
 
+import org.springframework.web.multipart.MultipartFile;
+
 /*
  * Book class 정의
  * 변수 10개, 함수 : 생성자 2개 , get()/set() 20개 
@@ -20,6 +22,7 @@ public class Book implements Serializable{
 	private long unitsInStock;
 	private String releaseDate;
 	private String condition;
+	private MultipartFile bookImage;
 	
 	public Book() {
 		super();
@@ -89,4 +92,11 @@ public class Book implements Serializable{
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
+	public MultipartFile getBookImage() {
+		return bookImage;
+	}
+	public void setBookImage(MultipartFile bookImage) {
+		this.bookImage = bookImage;
+	}
+	
 }

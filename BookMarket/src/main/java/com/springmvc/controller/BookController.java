@@ -1,6 +1,9 @@
 package com.springmvc.controller;
 
+import java.io.File;
 import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.springmvc.domain.Book;
 import com.springmvc.service.*;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 //1. 컨트롤러 지정
@@ -114,8 +118,24 @@ public class BookController {
 	
 	//도서 등록을 위한 입력을 마친 후 '등록' 버튼을 눌렀을 때 : POST
 	@PostMapping("/add")
-	public String submitAddNewBook(@ModelAttribute("NewBook") Book book) {
+	public String submitAddNewBook(@ModelAttribute("NewBook") Book book, HttpServletRequest request) {
 		System.out.println("addbook POST IN");
+		MultipartFile bookImage = book.getBookImage();
+		
+		String saveName = bookImage.getOriginalFilename();
+		String save = request.getServletContext().getRealPath("/resources/images");
+		
+		File saveFile = new File(save+saveName);
+		System.out.println("filename : "+ saveName);
+		System.out.println("savepath : "+ save);
+		if(bookImage != null && !bookImage.isEmpty()) {
+			try {
+				bookImage.transferTo(saveFile);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println("bookImage : "+ bookImage);
 		// MODEL에 도서를 등록하기 위한 절차
 		// 1. Service 멤버 메소드를 호출하여 Repo로 접근
 		bookService.setNewBook(book);
@@ -141,6 +161,6 @@ public class BookController {
 	public void initBinder(WebDataBinder binder) {
 		binder.setAllowedFields("bookId", "name","unitPrice", "author",
 				"description", "publisher","category", "unitsInStock",
-				"totalPages","releaseDate","condition");
+				"totalPages","releaseDate","condition","bookImage");
 	}
 }
