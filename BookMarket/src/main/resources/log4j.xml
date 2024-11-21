@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "http://logging.apache.org/log4j//1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Appenders : 어디에 출력할 것인가 -->
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<!-- 어떤 출력 형식으로 어떻게 출력할 것인가. <appender> 내에 존재 -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="monitor" class="org.apache.log4j.RollingFileAppender">
+		<param name="append" value="false"/>
+		<param name="maxFileSize" value="10KB"/>
+		<param name="maxBackupIndex" value="5"/>
+		<param name="file" value="c:/logs/monitor.log"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM--dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="info"/>
+			<param name="LevelMax" value="info"/>
+		</filter>
+	</appender>
+	
+	<appender name="audit" class="org.apache.log4j.RollingFileAppender">
+		<param name="append" value="false"/>
+		<param name="maxFileSize" value="10KB"/>
+		<param name="maxBackupIndex" value="5"/>
+		<param name="file" value="c:/logs/audit.log"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM--dd HH:mm:ss} %-5p %c{1}:%L - %m%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="warn"/>
+			<param name="LevelMax" value="warn"/>
+		</filter>
+	</appender>
+	
+	<!-- Application Loggers 
+	
+		* com.springmvc.chap11 패키지 안에 클래스들이 실행될 때,
+		* info 이상 등급을 출력할 것.
+		* FATAL > ERROR > WARN > INFO > DEBUG > TRACE 순
+	-->
+	<logger name="com.springmvc">
+		<level value="info"/>
+		<appender-ref ref="monitor"/>
+		<appender-ref ref="audit"/>
+	</logger>
+	
+	
+	<logger name="com.springmvc.chap11">
+		<level value="info" />
+	</logger>
+	
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.beans">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.context">
+		<level value="info" />
+	</logger>
+
+	<logger name="org.springframework.web">
+		<level value="info" />
+	</logger>
+
+	<!-- Root Logger 
+		* root는 기본 등급 : 위에서 지정되지 않은 것들 외에는 전부 warn등급부터 출력
+	-->
+	<root>
+		<priority value="warn" />
+		<appender-ref ref="console" />
+	</root>
+	
+</log4j:configuration>

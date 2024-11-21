@@ -4,14 +4,21 @@ import java.io.File;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import com.springmvc.domain.Book;
+import com.springmvc.exception.BookIdException;
+import com.springmvc.exception.CategoryException;
 import com.springmvc.service.*;
+import com.springmvc.validator.BookValidator;
+import com.springmvc.validator.UnitsInStockValidator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.MatrixVariable;
@@ -33,6 +40,12 @@ public class BookController {
 	// BookService도 <component-scan>에 등록되어 있어야한다.
 	@Autowired
 	private BookService bookService;
+	
+	@Autowired
+	private UnitsInStockValidator unitsInStockValidator;
+	
+	@Autowired
+	private BookValidator bookValidator;
 	
 	//2. 함수 생성 및 매핑
 	//@RequestMapping(value="/books", method=RequestMethod.GET)
@@ -61,6 +74,11 @@ public class BookController {
 	public String requestBooksByCategory(@PathVariable("category") String bookCategory, Model model) {
 		System.out.println("category값 : "+ bookCategory);
 		List<Book> booksByCategory = bookService.getBookListByCategory(bookCategory);
+		
+		if(booksByCategory == null || booksByCategory.isEmpty() ) {
+			throw new CategoryException();
+		}
+		
 		model.addAttribute("bookList", booksByCategory);
 		
 		return "books";
@@ -109,6 +127,12 @@ public class BookController {
 		return "book";
 	}
 	
+	@GetMapping("/lang")
+	public String language(HttpServletRequest req) {
+		String lang = req.getParameter("language");
+		return lang;
+	}
+	
 	//도서 등록 입력을 위한 페이지 매핑 : GET
 	@GetMapping("/add")
 	public String requestAddBookForm(@ModelAttribute("NewBook") Book book) {
@@ -118,8 +142,12 @@ public class BookController {
 	
 	//도서 등록을 위한 입력을 마친 후 '등록' 버튼을 눌렀을 때 : POST
 	@PostMapping("/add")
-	public String submitAddNewBook(@ModelAttribute("NewBook") Book book, HttpServletRequest request) {
+	public String submitAddNewBook(@Valid @ModelAttribute("NewBook") Book book, BindingResult result, HttpServletRequest request) {
 		System.out.println("addbook POST IN");
+		if(result.hasErrors()) {
+			return "addBook";
+		}
+		
 		MultipartFile bookImage = book.getBookImage();
 		
 		String saveName = bookImage.getOriginalFilename();
@@ -159,8 +187,27 @@ public class BookController {
 	//처음에 삽입한다는 것. 허용된 것과 허용되지 않은 것을 구분하여 삽입할 수 있다.
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
+		binder.setValidator(bookValidator);
 		binder.setAllowedFields("bookId", "name","unitPrice", "author",
 				"description", "publisher","category", "unitsInStock",
 				"totalPages","releaseDate","condition","bookImage");
+	}
+	
+	//예외처리 핸들러
+	// 예외가 throw되면 이 핸들러가 잡아 여기서 처리하게 된다.
+	// 				 (어떤 클래스로 처리할 것인지.)
+	@ExceptionHandler(BookIdException.class)
+	public ModelAndView handlerError(HttpServletRequest req, BookIdException exception) {
+		System.out.println("handler error 진입");
+		
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("invalidBookId", exception.getBookId());
+		mav.addObject("exception", exception);
+		mav.addObject("url", req.getRequestURL()+"?"+req.getQueryString());
+		mav.setViewName("errorBook");
+		
+		System.out.println("exception 메시지 : "+exception);
+		
+		return mav;
 	}
 }

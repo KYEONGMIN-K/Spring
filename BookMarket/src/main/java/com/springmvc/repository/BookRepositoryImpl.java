@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 
 import com.springmvc.domain.Book;
+import com.springmvc.exception.BookIdException;
 
 @Repository
 public class BookRepositoryImpl implements BookRepository{
@@ -133,6 +134,10 @@ public class BookRepositoryImpl implements BookRepository{
 		}
 		System.out.println("id_Repo 결과 : "+bookInfo);
 		
+		if(bookInfo == null) {
+			System.out.println("bookinfo null : "+ bookId);
+			throw new BookIdException(bookId);
+		}
 		// 4. dto를 찾았으니 service로 돌아간다.
 		return bookInfo;
 	}

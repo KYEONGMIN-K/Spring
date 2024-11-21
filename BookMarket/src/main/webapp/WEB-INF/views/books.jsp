@@ -28,9 +28,10 @@
 				for(int i=0; i<list.size(); i++){
 				
 				Book item = list.get(i);
+
 			%>
 				<div class="col-md-4">
-					<img src="/BookMarket/resources/images/<%=item.getBookId() %>.png" style="width:60%">
+					 <img src="/BookMarket/resources/images/<%=item.getBookId() %>.png" style="width:60%">
 					<h3><%= item.getName() %></h3>
 					<p><%= item.getAuthor() %>
 						<br><%=item.getPublisher() %> | <%=item.getReleaseDate() %>

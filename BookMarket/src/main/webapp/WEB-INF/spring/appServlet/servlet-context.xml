@@ -3,14 +3,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
-		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+		https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans 
+		https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		https://www.springframework.org/schema/context/spring-context.xsd">
 	
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
 	<!-- 핸들러매핑과 핸들러어댑터를 자동으로 객체 생성함 -->
-	<annotation-driven enable-matrix-variables="true"/>
+	<annotation-driven enable-matrix-variables="true" validator="validator"/>
 	
 
 	<!-- css, img, js와 같은 공유되는 파일의 위치를 정하고 mvc의 처리를 실시함 -->
@@ -36,6 +39,34 @@
 		<beans:constructor-arg value="c:/upload/"/>
 	</beans:bean>
  	-->
+	<interceptors>
+		<beans:bean class="com.springmvc.interceptor.MonitoringInterceptor"/>
+		<beans:bean class="com.springmvc.interceptor.AuditingInterceptor"/>
+		<beans:bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+			<beans:property name="paramName" value="language"/>
+		</beans:bean>
+	</interceptors>
 	
+	<beans:bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<beans:property name="defaultLocale" value="ko"/>
+	</beans:bean>
 	
+	<beans:bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<beans:property name="basename" value="messages"/>
+		<beans:property name="defaultEncoding" value="UTF-8"/>
+	</beans:bean>
+	
+	<beans:bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<beans:property name="validationMessageSource" ref="messageSource"/>
+	</beans:bean>
+
+	<beans:bean id="unitsInStockValidator" class="com.springmvc.validator.UnitsInStockValidator"/>
+	<beans:bean id="bookValidator" class="com.springmvc.validator.BookValidator">
+		<beans:property name="springValidator">
+			<beans:set>
+				<beans:ref bean="unitsInStockValidator"/>
+			</beans:set>
+		</beans:property>
+	</beans:bean>
+
 </beans:beans>
