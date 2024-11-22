@@ -1,11 +1,13 @@
 <%@ page isELIgnored="false" language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page import="com.springmvc.domain.Book" %>
 <!DOCTYPE html>
 <html>
 <head>
 <link href="http://localhost:8080/BookMarket/resources/css/bootstrap.min.css" rel="stylesheet">
+<script src="/BookMarket/resources/js/controllers.js"></script>
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
@@ -37,19 +39,22 @@
 				<%} %>
 			</div>
 			<div class="col-md-8">
-				<h3>${book.name}</h3>
-				<p>${book.description }</p>
+				<h3><%=book.getName() %></h3>
+				<p><%=book.getDescription() %></p>
 				<br>
-				<p><b>도서코드 : </b><span class="badge badge-info">${book.bookId }</span>
-				<p><b>저자</b> : ${book.author }
-				<p><b>출판사</b> : ${book.publisher }
-				<p><b>출판일</b> : ${book.releaseDate }
-				<p><b>분류</b> : ${book.category}
-				<p><b>재고수</b> : ${book.unitsInStock}
-				<h4>${book.unitPrice }원</h4>
+				<p><b>도서코드 : </b><span class="badge badge-info"><%=book.getBookId() %></span>
+				<p><b>저자</b> : <%=book.getAuthor() %>
+				<p><b>출판사</b> : <%=book.getPublisher() %>
+				<p><b>출판일</b> : <%=book.getReleaseDate() %>
+				<p><b>분류</b> : <%= book.getCategory() %>
+				<p><b>재고수</b> : <%= book.getUnitsInStock() %>
+				<h4><%= book.getUnitPrice() %>원</h4>
 				<br>
-				<p><a href="#" class="btn btn-secondary">도서주문 &raquo;</a>
-				<a href="<c:url value='http://localhost:8080/BookMarket/books'/>" class="btn btn-secondary">도서 목록</a>
+				<form:form name="addForm" method="put">
+					<p><a href="javascript:addToCart('../cart/add/<%=book.getBookId() %>')" class="btn btn-secondary">도서주문 &raquo;</a>
+					<a href="/BookMarket/cart" class="btn btn-warning">장바구니 &raquo;</a>
+					<a href="<c:url value='http://localhost:8080/BookMarket/books'/>" class="btn btn-secondary">도서 목록</a>
+				</form:form>
 			</div>
 		</div>
 		<hr>
