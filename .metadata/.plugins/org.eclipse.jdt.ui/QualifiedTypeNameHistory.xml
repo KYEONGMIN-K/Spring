@@ -12,4 +12,6 @@
     <fullyQualifiedTypeName name="com.springmvc.domain.Book"/>
     <fullyQualifiedTypeName name="javax.validation.Validator"/>
     <fullyQualifiedTypeName name="org.springframework.ui.Model"/>
+    <fullyQualifiedTypeName name="java.net.URLEncoder"/>
+    <fullyQualifiedTypeName name="java.net.URLDecoder"/>
 </qualifiedTypeNameHistroy>
